@@ -1,5 +1,8 @@
 # Devsecops_Project
 Deploying a StarBucks-Clone on EKS using DevSecOps methodology
+
+![Screenshot 2025-05-09 142824](https://github.com/user-attachments/assets/d9a89cbd-0c32-432a-b7d4-11e3673ddd09)
+
 In this project I am deploying StarBucks-Clone application on an EKS cluster using DevSecOps methodology. I am making use of security tools like SonarQube, OWASP Dependency Check and Trivy. I am monitoring EKS cluster using monitoring tools like Prometheus and Grafana. Most importantly I am deploying the Application using ArgoCD for the Deployment. image
 
 # Step 0 : ADD the github WEBHOOK in the github REpo Setting --> Add the jenkins URL in The Webhook URL
