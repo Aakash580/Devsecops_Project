@@ -19,14 +19,21 @@ I am making use of Terraform to launch the EC2 instance. We would be adding a sc
 Install the following plugins:
 
 1.NodeJS 
+
 2.Eclipse Temurin Installer 
+
 3.SonarQube Scanner
+
 4.OWASP Dependency Check
+
 5.Docker 
-6.Docker Commons 
-7.Docker 
-Pipeline 
+
+6.Docker Commons
+
+7.Docker Pipeline 
+
 8.Docker API 
+
 9.Docker-build-step
 
 # Step 3: Set up SonarQube
