@@ -38,7 +38,7 @@ Install the following plugins:
 
 # Step 3: Set up SonarQube
 
-For the SonarQube Configuration, first access the Sonarqube Dashboard using the url http://elastic_ip:9000
+For the SonarQube Configuration, first access the Sonarqube Dashboard using the url ```http://elastic_ip:9000```
 
 Create the token Administration -> Security -> Users -> Create a token
 
@@ -72,47 +72,47 @@ Prerequisite: Install kubectl and helm before executing the commands below .
 
 In order to access the cluster use the command below:
 
-aws eks update-kubeconfig --name "Cluster-Name" --region "Region-of-operation"
+```aws eks update-kubeconfig --name "Cluster-Name" --region "Region-of-operation"```
 
 We need to add the Helm Stable Charts for your local.
 
-helm repo add stable https://charts.helm.sh/stable
+```helm repo add stable https://charts.helm.sh/stable```
 
 Add prometheus Helm repo
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+```helm repo add prometheus-community https://prometheus-community.github.io/helm-charts```
 
 Create Prometheus namespace
 
-kubectl create namespace prometheus
+```kubectl create namespace prometheus```
 
 Install kube-prometheus stack
 
-helm install stable prometheus-community/kube-prometheus-stack -n prometheus
+```helm install stable prometheus-community/kube-prometheus-stack -n prometheus```
 
 Edit the service and make it LoadBalancer
 
-kubectl edit svc kube-prometheus-stack-prometheus -n prometheus
+```kubectl edit svc kube-prometheus-stack-prometheus -n prometheus```
 
 Edit the grafana service too to change it to LoadBalancer
 
-kubectl edit svc kube-prometheus-stack-grafana -n prometheus
+```kubectl edit svc kube-prometheus-stack-grafana -n prometheus```
 
 # Step 9: Deploy ArgoCD on EKS to fetch the manifest files to the cluster
 
 Create a namespace argocd
 
-kubectl create namespace argocd
+```kubectl create namespace argocd```
 
 Add argocd repo locally
 
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
+```kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml```
 
 By default, argocd-server is not publically exposed. In this scenario, we will use a Load Balancer to make it usable:
 
-kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+```kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'```
 
 We get the load balancer hostname using the command below:
-kubectl get svc argocd-server -n argocd -o json
+```kubectl get svc argocd-server -n argocd -o json```
 
 Once you get the load balancer hostname details, you can access the ArgoCD dashboard through it.
