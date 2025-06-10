@@ -1,227 +1,287 @@
-# Devsecops_Project
+# DevSecOps Starbucks Clone Project
 
-Deploying a StarBucks-Clone on EKS using DevSecOps methodology
+![Project Banner](https://img.shields.io/badge/DevSecOps-Project-blue?style=for-the-badge&logo=kubernetes)
+![AWS](https://img.shields.io/badge/AWS-EKS-orange?style=for-the-badge&logo=amazon-aws)
+![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-blue?style=for-the-badge&logo=jenkins)
+![ArgoCD](https://img.shields.io/badge/ArgoCD-GitOps-green?style=for-the-badge&logo=argo)
 
-![Screenshot 2025-05-09 142824](https://github.com/user-attachments/assets/d9a89cbd-0c32-432a-b7d4-11e3673ddd09)
+## 📋 Project Overview
 
-In this project I am deploying StarBucks-Clone application on an EKS cluster using DevSecOps methodology.
+This project demonstrates the deployment of a Starbucks Clone application on Amazon EKS (Elastic Kubernetes Service) using comprehensive DevSecOps methodology. The implementation incorporates security scanning, monitoring, and GitOps practices to ensure a robust, secure, and scalable deployment pipeline.
 
-I am making use of security tools like SonarQube, OWASP Dependency Check and Trivy. I am monitoring EKS cluster using monitoring tools like Prometheus and Grafana. Most importantly I am deploying the Application using ArgoCD for the Deployment. image
+## 🏗️ Architecture
 
-# Step 0 : ADD the github WEBHOOK in the github REpo Setting --> Add the jenkins URL in The Webhook URL
+The project follows a complete DevSecOps workflow:
 
-# Step 1: Launch an EC2 Instance and install Jenkins, SonarQube, Docker and Trivy
+1. **Source Code Management**: GitHub with webhook integration
+2. **CI/CD Pipeline**: Jenkins with security scanning stages
+3. **Security Tools**: SonarQube, OWASP Dependency Check, Trivy, Docker Scout
+4. **Container Registry**: DockerHub
+5. **Infrastructure**: AWS EKS cluster provisioned with Terraform
+6. **Monitoring**: Prometheus and Grafana
+7. **GitOps Deployment**: ArgoCD
 
-I am making use of Terraform to launch the EC2 instance. We would be adding a script as userdata for the installation of Jenkins, SonarQube, Trivy and Docker.
+## 🛠️ Tech Stack
 
-# Step 2: Access Jenkins at port 8080 and install required plugins
+### Infrastructure & Orchestration
+- **AWS EKS** - Kubernetes cluster management
+- **Terraform** - Infrastructure as Code
+- **Docker** - Containerization
 
-Install the following plugins:
+### CI/CD & DevOps Tools
+- **Jenkins** - CI/CD pipeline automation
+- **ArgoCD** - GitOps deployment
+- **GitHub** - Source code management with webhook integration
 
-1.NodeJS 
+### Security Tools
+- **SonarQube** - Static code analysis
+- **OWASP Dependency Check** - Vulnerability scanning
+- **Trivy** - Container security scanning
+- **Docker Scout** - Container image analysis
 
-2.Eclipse Temurin Installer 
+### Monitoring & Observability
+- **Prometheus** - Metrics collection
+- **Grafana** - Visualization and dashboards
+- **Helm** - Kubernetes package management
 
-3.SonarQube Scanner
+### Development
+- **Node.js** - Runtime environment
+- **npm** - Package management
 
-4.OWASP Dependency Check
+## 🚀 Getting Started
 
-5.Docker 
+### Prerequisites
 
-6.Docker Commons
+Before starting, ensure you have the following tools installed:
 
-7.Docker Pipeline 
+- [AWS CLI](https://aws.amazon.com/cli/) configured with appropriate permissions
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) - Kubernetes command-line tool
+- [Helm](https://helm.sh/docs/intro/install/) - Kubernetes package manager
+- [Terraform](https://www.terraform.io/downloads) - Infrastructure provisioning
+- [Docker](https://docs.docker.com/get-docker/) - Container platform
 
-8.Docker API 
+### AWS Permissions Required
 
-9.Docker-build-step
+Ensure your AWS user/role has permissions for:
+- EC2 (for Jenkins server)
+- EKS (for Kubernetes cluster)
+- VPC and networking resources
+- IAM roles and policies
 
-# Step 3: Set up SonarQube
+## 📝 Implementation Steps
 
-For the SonarQube Configuration, first access the Sonarqube Dashboard using the url ```http://elastic_ip:9000```
+### Step 0: GitHub Webhook Configuration
+1. Navigate to your GitHub repository settings
+2. Go to **Webhooks** → **Add webhook**
+3. Add your Jenkins URL in the webhook URL field
+4. Set content type to `application/json`
+5. Select "Just the push event" or customize as needed
 
-Create the token Administration -> Security -> Users -> Create a token
+### Step 1: Infrastructure Setup
+Launch EC2 instance with required tools using Terraform:
 
-Add this token as a credential in Jenkins
+```bash
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/Devsecops_Project.git
+cd Devsecops_Project
 
-Go to Manage Jenkins -> System -> SonarQube installation Add URL of SonarQube and for the credential select the one added in step 2.
-
-Go to Manage Jenkins -> Tools -> SonarQube Scanner Installations -> Install automatically.
-
-# Step 4: Set up OWASP Dependency Check
-
-Go to Manage Jenkins -> Tools -> Dependency-Check Installations -> Install automatically
-
-# Step 5: Set up Docker for Jenkins
-
-Go to Manage Jenkins -> Tools -> Docker Installations -> Install automatically
-
-And then go to Manage Jenkins -> Credentials -> System -> Global Credentials -> Add credentials. Add username and password for the docker registry (You need to create an account on Dockerhub).
-
-# Step 6: Create a pipeline in order to build and push the dockerized image securely using multiple security tools
-
-Go to Dashboard -> New Item -> Pipeline
-
-```Use theis pipeline syntax 
-pipeline {
-    agent any
-    tools {
-        jdk 'jdk17'
-        nodejs 'Node24'
-    }
-    environment {
-        SCANNER_HOME=tool 'sonar-scanner'
-    }
-    stages {
-        stage ("clean workspace") {
-            steps {
-                cleanWs()
-            }
-        }
-        stage ("Git checkout") {
-            steps {
-                git branch: 'main', url: 'https://github.com/Aakash580/Devsecops_Project.git'
-            }
-        }
-        stage("Sonarqube Analysis "){
-            steps{
-                withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=starbucks-deploy \
-                    -Dsonar.projectKey=starbucks-deploy '''
-                }
-            }
-        }
-        stage("quality gate"){
-           steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token' 
-                }
-            } 
-        }
-        stage("Install NPM Dependencies") {
-            steps {
-                sh "npm install"
-            }
-        }
-        stage('OWASP FS SCAN') {
-            steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
-            }
-        }
-        stage ("Trivy File Scan") {
-            steps {
-                sh "trivy fs . > trivy.txt"
-            }
-        }
-        stage ("Build Docker Image") {
-            steps {
-                sh "docker build -t starbucks ."
-            }
-        }
-        stage ("Tag & Push to DockerHub") {
-            steps {
-                script {
-                    withDockerRegistry(credentialsId: 'Docker') {
-                        sh "docker tag starbucks aakashbendre580/starbucks:latest"
-                        sh "docker push aakashbendre580/starbucks:latest "
-                    }
-                }
-            }
-        }
-        stage('Docker Scout Image') {
-            steps {
-                script{
-                   withDockerRegistry(credentialsId: 'Docker', toolName: 'Docker'){
-                       sh 'docker-scout quickview aakashbendre580/starbucks:latest'
-                       sh 'docker-scout cves aakashbendre580/starbucks:latest'
-                       sh 'docker-scout recommendations aakashbendre580/starbucks:latest'
-                   }
-                }
-            }
-        }
-        stage ("Deploy to Conatiner") {
-            steps {
-                sh 'docker run -d  -p 3000:3000 aakashbendre580/starbucks:latest'
-            }
-        }
-    }
-    post {
-    always {
-        emailext attachLog: true,
-            subject: "'${currentBuild.result}'",
-            body: """
-                <html>
-                <body>
-                    <div style="background-color: #FFA07A; padding: 10px; margin-bottom: 10px;">
-                        <p style="color: white; font-weight: bold;">Project: ${env.JOB_NAME}</p>
-                    </div>
-                    <div style="background-color: #90EE90; padding: 10px; margin-bottom: 10px;">
-                        <p style="color: white; font-weight: bold;">Build Number: ${env.BUILD_NUMBER}</p>
-                    </div>
-                    <div style="background-color: #87CEEB; padding: 10px; margin-bottom: 10px;">
-                        <p style="color: white; font-weight: bold;">URL: ${env.BUILD_URL}</p>
-                    </div>
-                </body>
-                </html>
-            """,
-            to: 'provide_your_Email_id_here',
-            mimeType: 'text/html',
-            attachmentsPattern: 'trivy.txt'
-        }
-    }
-}
+# Deploy infrastructure
+terraform init
+terraform plan
+terraform apply
 ```
 
-# Step 7: Create an EKS Cluster using Terraform
+The Terraform script will install:
+- Jenkins
+- SonarQube
+- Docker
+- Trivy
 
-Prerequisite: Install kubectl and helm before executing the commands below .
+### Step 2: Jenkins Configuration
+Access Jenkins at `http://YOUR_EC2_IP:8080` and install required plugins:
 
-# Step 8: Deploy Prometheus and Grafana on EKS
+#### Required Jenkins Plugins:
+1. NodeJS
+2. Eclipse Temurin Installer
+3. SonarQube Scanner
+4. OWASP Dependency Check
+5. Docker
+6. Docker Commons
+7. Docker Pipeline
+8. Docker API
+9. Docker-build-step
 
-In order to access the cluster use the command below:
+### Step 3: SonarQube Setup
+1. Access SonarQube at `http://YOUR_EC2_IP:9000`
+2. Login with default credentials (admin/admin)
+3. Create a new token: **Administration** → **Security** → **Users** → **Create Token**
+4. Add token as Jenkins credential
+5. Configure SonarQube in Jenkins: **Manage Jenkins** → **System** → **SonarQube Installation**
 
-```aws eks update-kubeconfig --name "Cluster-Name" --region "Region-of-operation"```
+### Step 4: OWASP Dependency Check Configuration
+Configure in Jenkins: **Manage Jenkins** → **Tools** → **Dependency-Check Installations** → **Install automatically**
 
-We need to add the Helm Stable Charts for your local.
+### Step 5: Docker Registry Setup
+1. Create DockerHub account
+2. Add DockerHub credentials in Jenkins: **Manage Jenkins** → **Credentials** → **Global** → **Add Credentials**
+3. Configure Docker in Jenkins: **Manage Jenkins** → **Tools** → **Docker Installations**
 
-```helm repo add stable https://charts.helm.sh/stable```
+### Step 6: Jenkins Pipeline Creation
 
-Add prometheus Helm repo
+Create a new pipeline job in Jenkins and use the provided Jenkinsfile. The pipeline includes:
 
-```helm repo add prometheus-community https://prometheus-community.github.io/helm-charts```
+#### Pipeline Stages:
+- **Clean Workspace**: Prepare clean environment
+- **Git Checkout**: Pull latest code
+- **SonarQube Analysis**: Static code analysis
+- **Quality Gate**: Ensure code quality standards
+- **NPM Dependencies**: Install application dependencies
+- **OWASP Scan**: Dependency vulnerability check
+- **Trivy File Scan**: File system security scan
+- **Docker Build**: Create container image
+- **Docker Push**: Push to DockerHub registry
+- **Docker Scout**: Container security analysis
+- **Deploy**: Run container for testing
 
-Create Prometheus namespace
+#### Email Notifications
+The pipeline includes HTML email notifications with:
+- Build status
+- Project information
+- Trivy scan results attachment
 
-```kubectl create namespace prometheus```
+### Step 7: EKS Cluster Deployment
+Use Terraform to create EKS cluster:
 
-Install kube-prometheus stack
+```bash
+# Navigate to EKS terraform directory
+cd terraform/eks
 
-```helm install stable prometheus-community/kube-prometheus-stack -n prometheus```
+# Deploy EKS cluster
+terraform init
+terraform plan
+terraform apply
+```
 
-Edit the service and make it LoadBalancer
+### Step 8: Monitoring Setup (Prometheus & Grafana)
 
-```kubectl edit svc kube-prometheus-stack-prometheus -n prometheus```
+```bash
+# Configure kubectl for EKS
+aws eks update-kubeconfig --name "YOUR_CLUSTER_NAME" --region "YOUR_REGION"
 
-Edit the grafana service too to change it to LoadBalancer
+# Add Helm repositories
+helm repo add stable https://charts.helm.sh/stable
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 
-```kubectl edit svc kube-prometheus-stack-grafana -n prometheus```
+# Create namespace and install Prometheus stack
+kubectl create namespace prometheus
+helm install stable prometheus-community/kube-prometheus-stack -n prometheus
 
-# Step 9: Deploy ArgoCD on EKS to fetch the manifest files to the cluster
+# Expose Prometheus and Grafana via LoadBalancer
+kubectl edit svc kube-prometheus-stack-prometheus -n prometheus
+kubectl edit svc kube-prometheus-stack-grafana -n prometheus
+```
 
-Create a namespace argocd
+**Grafana Access:**
+- Default credentials: admin/prom-operator
+- Access via LoadBalancer external IP on port 80
 
-```kubectl create namespace argocd```
+### Step 9: ArgoCD GitOps Setup
 
-Add argocd repo locally
+```bash
+# Create ArgoCD namespace
+kubectl create namespace argocd
 
-```kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml```
+# Install ArgoCD
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.7/manifests/install.yaml
 
-By default, argocd-server is not publically exposed. In this scenario, we will use a Load Balancer to make it usable:
+# Expose ArgoCD server
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 
-```kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'```
+# Get ArgoCD server details
+kubectl get svc argocd-server -n argocd
+```
 
-We get the load balancer hostname using the command below:
-```kubectl get svc argocd-server -n argocd -o json```
+**ArgoCD Access:**
+- Username: admin
+- Password: Get using `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
 
-Once you get the load balancer hostname details, you can access the ArgoCD dashboard through it.
+## 📊 Monitoring & Observability
+
+### Prometheus Metrics
+- Cluster resource utilization
+- Application performance metrics
+- Node and pod health status
+
+### Grafana Dashboards
+- Kubernetes cluster overview
+- Application-specific metrics
+- Security scan results visualization
+
+## 🔐 Security Features
+
+### Code Security
+- **SonarQube**: Static analysis for code quality and security vulnerabilities
+- **OWASP Dependency Check**: Identifies known vulnerabilities in dependencies
+
+### Container Security
+- **Trivy**: Comprehensive vulnerability scanning for containers and filesystems
+- **Docker Scout**: Container image security analysis and recommendations
+
+### Runtime Security
+- Kubernetes security policies
+- Network policies for pod-to-pod communication
+- RBAC implementation
+
+## 🔄 GitOps Workflow
+
+1. Developer pushes code to GitHub
+2. GitHub webhook triggers Jenkins pipeline
+3. Pipeline runs security scans and builds container
+4. Container image pushed to DockerHub
+5. ArgoCD detects changes in GitOps repository
+6. ArgoCD deploys application to EKS cluster
+7. Monitoring tools track application health
+
+## 📈 Benefits
+
+- **Security**: Multiple layers of security scanning
+- **Automation**: Fully automated CI/CD pipeline
+- **Scalability**: Kubernetes-based deployment
+- **Monitoring**: Comprehensive observability
+- **GitOps**: Declarative deployment management
+- **Compliance**: Security and quality gates
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/YOUR_USERNAME/Devsecops_Project/issues) page
+2. Create a new issue with detailed description
+3. Include logs and error messages
+
+## 🙏 Acknowledgments
+
+- AWS for EKS platform
+- Jenkins community for CI/CD capabilities
+- ArgoCD team for GitOps implementation
+- Security tool vendors (SonarQube, OWASP, Aqua Security)
+- Prometheus and Grafana communities for monitoring solutions
+
+---
+
+**⭐ If you found this project helpful, please give it a star!**
+
+![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/Devsecops_Project?style=social)
+![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/Devsecops_Project?style=social)
