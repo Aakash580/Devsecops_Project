@@ -267,7 +267,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you encounter any issues or have questions:
 
-1. Check the [Issues](https://github.com/YOUR_USERNAME/Devsecops_Project/issues) page
+1. Check the [Issues](https://github.com/Aakash580/Devsecops_Project/issues) page
 2. Create a new issue with detailed description
 3. Include logs and error messages
 
@@ -283,5 +283,5 @@ If you encounter any issues or have questions:
 
 **⭐ If you found this project helpful, please give it a star!**
 
-![GitHub stars](https://img.shields.io/github/stars/YOUR_USERNAME/Devsecops_Project?style=social)
-![GitHub forks](https://img.shields.io/github/forks/YOUR_USERNAME/Devsecops_Project?style=social)
+![GitHub stars](https://img.shields.io/github/stars/Aakash580/Devsecops_Project?style=social)
+![GitHub forks](https://img.shields.io/github/forks/Aakash580/Devsecops_Project?style=social)
