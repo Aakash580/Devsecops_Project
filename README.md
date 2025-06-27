@@ -20,6 +20,7 @@ The project follows a complete DevSecOps workflow:
 5. **Infrastructure**: AWS EKS cluster provisioned with Terraform
 6. **Monitoring**: Prometheus and Grafana
 7. **GitOps Deployment**: ArgoCD
+![image](https://github.com/user-attachments/assets/b1c7f3b9-0ddc-47e0-879d-2f63e4667f11)
 
 ## 🛠️ Tech Stack
 
