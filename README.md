@@ -112,22 +112,22 @@ Access Jenkins at `http://YOUR_EC2_IP:8080` and install required plugins:
 8. Docker API
 9. Docker-build-step
 
-### Step 3: SonarQube Setup
+### Step 3: SonarQube Setup.
 1. Access SonarQube at `http://YOUR_EC2_IP:9000`
 2. Login with default credentials (admin/admin)
 3. Create a new token: **Administration** → **Security** → **Users** → **Create Token**
 4. Add token as Jenkins credential
 5. Configure SonarQube in Jenkins: **Manage Jenkins** → **System** → **SonarQube Installation**
 
-### Step 4: OWASP Dependency Check Configuration
+### Step 4: OWASP Dependency Check Configuration.
 Configure in Jenkins: **Manage Jenkins** → **Tools** → **Dependency-Check Installations** → **Install automatically**
 
-### Step 5: Docker Registry Setup
+### Step 5: Docker Registry Setup.
 1. Create DockerHub account
 2. Add DockerHub credentials in Jenkins: **Manage Jenkins** → **Credentials** → **Global** → **Add Credentials**
 3. Configure Docker in Jenkins: **Manage Jenkins** → **Tools** → **Docker Installations**
 
-### Step 6: Jenkins Pipeline Creation
+### Step 6: Jenkins Pipeline Creation.
 
 Create a new pipeline job in Jenkins and use the provided Jenkinsfile. The pipeline includes:
 
@@ -144,13 +144,13 @@ Create a new pipeline job in Jenkins and use the provided Jenkinsfile. The pipel
 - **Docker Scout**: Container security analysis
 - **Deploy**: Run container for testing
 
-#### Email Notifications
+#### Email Notifications.
 The pipeline includes HTML email notifications with:
 - Build status
 - Project information
 - Trivy scan results attachment
 
-### Step 7: EKS Cluster Deployment
+### Step 7: EKS Cluster Deployment.
 Use Terraform to create EKS cluster:
 
 ```bash
@@ -163,7 +163,7 @@ terraform plan
 terraform apply
 ```
 
-### Step 8: Monitoring Setup (Prometheus & Grafana)
+### Step 8: Monitoring Setup (Prometheus & Grafana).
 
 ```bash
 # Configure kubectl for EKS
@@ -186,7 +186,7 @@ kubectl edit svc kube-prometheus-stack-grafana -n prometheus
 - Default credentials: admin/prom-operator
 - Access via LoadBalancer external IP on port 80
 
-### Step 9: ArgoCD GitOps Setup
+### Step 9: ArgoCD GitOps Setup.
 
 ```bash
 # Create ArgoCD namespace
@@ -206,34 +206,34 @@ kubectl get svc argocd-server -n argocd
 - Username: admin
 - Password: Get using `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d`
 
-## 📊 Monitoring & Observability
+## 📊 Monitoring & Observability.
 
-### Prometheus Metrics
+### Prometheus Metrics.
 - Cluster resource utilization
 - Application performance metrics
 - Node and pod health status
 
-### Grafana Dashboards
+### Grafana Dashboards.
 - Kubernetes cluster overview
 - Application-specific metrics
 - Security scan results visualization
 
-## 🔐 Security Features
+## 🔐 Security Features.
 
-### Code Security
+### Code Security.
 - **SonarQube**: Static analysis for code quality and security vulnerabilities
 - **OWASP Dependency Check**: Identifies known vulnerabilities in dependencies
 
-### Container Security
+### Container Security.
 - **Trivy**: Comprehensive vulnerability scanning for containers and filesystems
 - **Docker Scout**: Container image security analysis and recommendations
 
-### Runtime Security
+### Runtime Security.
 - Kubernetes security policies
 - Network policies for pod-to-pod communication
 - RBAC implementation
 
-## 🔄 GitOps Workflow
+## 🔄 GitOps Workflow.
 
 1. Developer pushes code to GitHub
 2. GitHub webhook triggers Jenkins pipeline
@@ -243,7 +243,7 @@ kubectl get svc argocd-server -n argocd
 6. ArgoCD deploys application to EKS cluster
 7. Monitoring tools track application health
 
-## 📈 Benefits
+## 📈 Benefits.
 
 - **Security**: Multiple layers of security scanning
 - **Automation**: Fully automated CI/CD pipeline
@@ -252,7 +252,7 @@ kubectl get svc argocd-server -n argocd
 - **GitOps**: Declarative deployment management
 - **Compliance**: Security and quality gates
 
-## 🤝 Contributing
+## 🤝 Contributing.
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
@@ -260,11 +260,11 @@ kubectl get svc argocd-server -n argocd
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## 📄 License.
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 📞 Support
+## 📞 Support.
 
 If you encounter any issues or have questions:
 
@@ -272,7 +272,7 @@ If you encounter any issues or have questions:
 2. Create a new issue with detailed description
 3. Include logs and error messages
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments.
 
 - AWS for EKS platform
 - Jenkins community for CI/CD capabilities
